@@ -7,7 +7,6 @@ size = width,height = 640,480
 screen = pygame.display.set_mode(size)
 pygame.display.set_caption('BUBBLE TROUBLE')
 
-pygame.mouse.set_visible(True)
 # Color Definition
 black = 0,0,0
 white = 255,255,255
@@ -76,6 +75,8 @@ class Bubble:
         #self.surface.fill(red)
 
     def update(self,radius):
+        #print radius
+        #speed = [1,110/radius]
         pos_x = self.position[0]
         pos_y = self.position[1]
         ballrect = pygame.draw.circle(screen,self.color,[int(pos_x),int(pos_y)],radius)
@@ -93,11 +94,9 @@ class Bubble:
             self.speed[1] *= -1
 
     def split(self):
-        split_ball1 = Bubble(self.position[0],int(self.radius/2),self.color)
-        split_ball2 = Bubble(self.position[0]+self.radius,self.radius/2,self.color)
+        #split_ball = Bubble(self.position[0] + self.radius,self.radius/2,self.color)
 
-        split_ball1.update(int(self.radius/2))
-        split_ball2.update(int(self.radius/2))
+        split_ball.update(int(self.radius/2))
 
     def is_collided_with(self, Player):
         #print str(self.surface.get_rect())
@@ -109,18 +108,20 @@ class Bubble:
         print "Bubble Destructed"
 
 
-#   instance of Bubbles
+#   Ball Property
 radiuses = [10,10,30,40,50]
 x_position = [65,130,195,280,345,410,475,540,580]
-#   Bubble 1
+color = [black,blue,green,red]
+
+
+#   Array of Bubbles
+n = 1
+bubble = []
 ball_radius1 = random.choice(radiuses)
-Bubble1 = Bubble(random.choice(x_position),ball_radius1,blue)
-
-
-# #   Bubble 2
-# ball_radius2 = random.choice(radius)
-# print "Ball 2 radius - " + str(ball_radius2)
-# Bubble2 = Bubble(random.choice(x_position),random.choice(radius),green)
+for i in range(0,n):
+    temp_bubble = Bubble(random.choice(x_position),ball_radius1,random.choice(color))
+    bubble.append(temp_bubble)
+    bubble[i].update(ball_radius1)
 
 #instance of player
 player1 = player()
@@ -130,6 +131,7 @@ count = 0
 
 done = False
 a = 0
+
 while not done:
     screen.fill(white)
     fpsClock.tick(FPS)
@@ -142,10 +144,17 @@ while not done:
         elif event.type == KEYDOWN and event.key == K_SPACE:
             line_x = player1.x + player1.rect.width/2
             pygame.draw.line(screen,blue,(line_x,0),(line_x,height))
-            if (line_x in range(Bubble1.position[0]-Bubble1.radius,Bubble1.position[0]+Bubble1.radius)):
-                ball_radius1 = ball_radius1/2
+            for obj in bubble:
+                if (line_x in range(obj.position[0]-obj.radius,obj.position[0]+obj.radius)):
+                    print "HIT"
+                    ball_radius1 = ball_radius1/2
+                    a += 1
+                    if ball_radius1 >2:
+                        split_ball = Bubble(Bubble1.position[0] + Bubble1.radius,Bubble1.radius/2,Bubble1.color)
+                        Bubble1.speed[1] = 50/ball_radius1
+                #Bubble1.update(ball_radius1)
                 #ball_radius2 = ball_radius2/2
-                count += 1
+                    count += 1
         elif event.type == KEYDOWN and event.key == K_RIGHT:
             player_pos = 1
             player_dir = 1
@@ -157,6 +166,8 @@ while not done:
         elif event.type == KEYUP and event.key == K_LEFT:
             player_pos = 0
 
+    if a > 0:
+        bubble.append(Bubble(50,20,red))
     pygame.font.init()
     myfont = pygame.font.SysFont('Comic Sans MS', 30)
 
@@ -165,20 +176,17 @@ while not done:
     # Control of Bubbles
     #print "Ball 1 radius - " + str(ball_radius1)
     #print "Ball 2 radius - " + str(ball_radius2)
-    if ball_radius1 > 2:
-        Bubble1.update(ball_radius1)
-    else:
+    if ball_radius1 < 2:
         textSurface = myfont.render('Congrats!!!',False,(0,1,0))
-        screen.blit(textSurface,(width/2-11,height/2))
-
+        screen.blit(textSurface,(width/2-22,height/2))
 
     # if ball_radius2 > 2:
     #     Bubble2.update(ball_radius2)
 
     #print "Bubble position: " + str(Bubble1.position)
-    if(Bubble1.is_collided_with(player1)==1):
-        a = 1
-        #print "Collision"
+    for obj in bubble:
+        if(obj.is_collided_with(player1)==1):
+            print "Collision"
 
     player1.update(player_pos,player_dir)
     pygame.display.flip()

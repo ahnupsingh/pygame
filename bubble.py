@@ -75,6 +75,8 @@ class Bubble:
         #self.surface.fill(red)
 
     def update(self,radius):
+        # print radius
+        #speed = [1,110/radius]
         pos_x = self.position[0]
         pos_y = self.position[1]
         ballrect = pygame.draw.circle(screen,self.color,[int(pos_x),int(pos_y)],radius)
@@ -92,12 +94,9 @@ class Bubble:
             self.speed[1] *= -1
 
     def split(self):
-        print self.position[0]
-        split_ball1 = Bubble(self.position[0],int(self.radius/2),self.color)
-        split_ball2 = Bubble(self.position[0]+self.radius,self.radius/2,self.color)
+        #split_ball = Bubble(self.position[0] + self.radius,self.radius/2,self.color)
 
-        split_ball1.update(int(self.radius/2))
-        split_ball2.update(int(self.radius/2))
+        split_ball.update(int(self.radius/2))
 
     def is_collided_with(self, Player):
         #print str(self.surface.get_rect())
@@ -112,9 +111,12 @@ class Bubble:
 #   instance of Bubbles
 radiuses = [10,10,30,40,50]
 x_position = [65,130,195,280,345,410,475,540,580]
-#   Bubble 1
+color = [black,blue,green,red]
+
+  #Bubble 1
 ball_radius1 = random.choice(radiuses)
-Bubble1 = Bubble(random.choice(x_position),ball_radius1,blue)
+Bubble1 = Bubble(random.choice(x_position),ball_radius1,random.choice(color))
+split_ball = Bubble(random.choice(x_position),ball_radius1,random.choice(color))
 
 
 # #   Bubble 2
@@ -142,10 +144,15 @@ while not done:
         elif event.type == KEYDOWN and event.key == K_SPACE:
             line_x = player1.x + player1.rect.width/2
             pygame.draw.line(screen,blue,(line_x,0),(line_x,height))
-            if (line_x in range(Bubble1.position[0]-Bubble1.radius,Bubble1.position[0]+Bubble1.radius)):
-                #ball_radius1 = ball_radius1/2
-                #ball_radius2 = ball_radius2/2
+            if (line_x in range(Bubble1.position[0] - Bubble1.radius,Bubble1.position[0] + Bubble1.radius)):
+                print "HIT"
+                ball_radius1 = ball_radius1/2
                 a = 1
+                if ball_radius1 >2:
+                    split_ball = Bubble(Bubble1.position[0] + Bubble1.radius,Bubble1.radius/2,Bubble1.color)
+                    Bubble1.speed[1] = 50/ball_radius1
+                #Bubble1.update(ball_radius1)
+                #ball_radius2 = ball_radius2/2
                 count += 1
         elif event.type == KEYDOWN and event.key == K_RIGHT:
             player_pos = 1
@@ -159,8 +166,7 @@ while not done:
             player_pos = 0
 
     if a==1:
-        Bubble1.__del__()
-        Bubble1.split()
+        split_ball.update(ball_radius1)
     pygame.font.init()
     myfont = pygame.font.SysFont('Comic Sans MS', 30)
 
@@ -169,12 +175,9 @@ while not done:
     # Control of Bubbles
     #print "Ball 1 radius - " + str(ball_radius1)
     #print "Ball 2 radius - " + str(ball_radius2)
-    if ball_radius1 > 2:
-        Bubble1.update(ball_radius1)
-    else:
+    if ball_radius1 < 2:
         textSurface = myfont.render('Congrats!!!',False,(0,1,0))
-        screen.blit(textSurface,(width/2-11,height/2))
-
+        screen.blit(textSurface,(width/2-22,height/2))
 
     # if ball_radius2 > 2:
     #     Bubble2.update(ball_radius2)
