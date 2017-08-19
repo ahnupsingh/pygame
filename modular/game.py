@@ -37,7 +37,8 @@ while not done:
             pygame.draw.line(screen,blue,(line_x,0),(line_x,height))
             if (line_x in range(Bubble1.position[0]-Bubble1.radius,Bubble1.position[0]+Bubble1.radius)):
                 ball_radius1 = ball_radius1/2
-                Bubble1.speed[1] = 50/ball_radius1
+                if ball_radius1 < 2:
+                    Bubble1.speed[1] = 50/ball_radius1
                 #ball_radius2 = ball_radius2/2
                 count += 1
         elif event.type == KEYDOWN and event.key == K_RIGHT:
@@ -51,6 +52,9 @@ while not done:
         elif event.type == KEYUP and event.key == K_LEFT:
             player_pos = 0
 
+        if player1.x < 0:
+            player_pos = 0
+            
     pygame.font.init()
     myfont = pygame.font.SysFont('Comic Sans MS', 30)
 
@@ -73,7 +77,6 @@ while not done:
     if(Bubble1.is_collided_with(player1)==1):
         a = 1
         #print "Collision"
-
     player1.update(player_pos,player_dir)
     pygame.display.flip()
     pygame.display.update()
